@@ -9,8 +9,8 @@ name = "fibonacci"
 path = "src/bin/main.rs"
 
 [[bin]]
-name = "evm"
-path = "src/bin/evm.rs"
+name = "starknet"
+path = "src/bin/starknet.rs"
 
 [[bin]]
 name = "vkey"

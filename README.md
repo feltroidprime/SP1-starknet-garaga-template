@@ -51,12 +51,6 @@ cd script
 cargo run --release --bin evm -- --system groth16
 ```
 
-To generate a PLONK proof:
-
-```sh
-cargo run --release --bin evm -- --system plonk
-```
-
 These commands will also generate fixtures that can be used to test the verification of SP1 proofs
 inside Solidity.
 
