@@ -1,5 +1,4 @@
-use snforge_std::fs::file_operations::File;
-use snforge_std::fs::read_txt;
+use snforge_std::fs::{File, FileTrait, read_txt};
 use snforge_std::{ContractClassTrait, DeclareResultTrait, declare};
 use sp1_app::{
     IHelloStarknetDispatcher, IHelloStarknetDispatcherTrait, IHelloStarknetSafeDispatcher,
@@ -13,27 +12,13 @@ fn deploy_contract(name: ByteArray) -> ContractAddress {
     contract_address
 }
 
-// #[derive(Drop, Clone)]
-// pub struct File {
-//     path: ByteArray,
-// }
-// pub fn read_txt(file: @File) -> Array<felt252>
-
-fn get_proof_calldata(file: @File) -> Array<felt252> {
-    read_txt(file)
-}
-
 #[test]
-fn test_increase_balance() {
+#[fork(url: "https://starknet-sepolia.public.blastapi.io/rpc/v0_8", block_tag: latest)]
+fn test_verify_sp1_proof() {
     let contract_address = deploy_contract("HelloStarknet");
-
     let dispatcher = IHelloStarknetDispatcher { contract_address };
-
-    let balance_before = dispatcher.get_balance();
-    assert(balance_before == 0, 'Invalid balance');
-
-    dispatcher.increase_balance(42);
-
-    let balance_after = dispatcher.get_balance();
-    assert(balance_after == 42, 'Invalid balance');
+    let file = FileTrait::new("src/fixtures/groth16-calldata.txt");
+    let calldata = read_txt(@file);
+    let result = dispatcher.verify_sp1_proof(calldata);
+    assert(result.is_some(), 'Proof is invalid');
 }
