@@ -22,6 +22,8 @@ pub fn main() {
     let (a, b) = fibonacci(n);
 
     // Encode the public values of the program.
+    // Note : Garaga expects as well all public inputs to be encoded in a multiple of 32 bytes.
+    // You can pack them manually if needed.
     let bytes = PublicValuesStruct::abi_encode(&PublicValuesStruct { n, a, b });
 
     // Commit to the public values of the program. The final proof will have a commitment to all the
