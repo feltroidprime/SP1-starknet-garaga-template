@@ -7,6 +7,11 @@
 //! ```
 
 use clap::{Parser, ValueEnum};
+use garaga_rs::calldata::full_proof_with_hints::groth16::{
+    get_groth16_calldata, get_sp1_vk, Groth16Proof,
+};
+use garaga_rs::definitions::CurveID;
+use num_bigint::BigUint;
 use serde::{Deserialize, Serialize};
 use sp1_sdk::{
     include_elf, HashableKey, ProverClient, SP1ProofWithPublicValues, SP1Stdin, SP1VerifyingKey,
@@ -20,7 +25,7 @@ pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct StarknetArgs {
-    #[arg(long, default_value = "20")]
+    #[arg(long, default_value = "3")]
     n: u32,
     #[arg(long, value_enum, default_value = "groth16")]
     system: ProofSystem,
@@ -70,6 +75,44 @@ fn main() {
     create_proof_fixture(&proof, &vk, args.system);
 }
 
+pub fn get_sp1_garaga_starknet_calldata(
+    proof: &SP1ProofWithPublicValues,
+    vk: &SP1VerifyingKey,
+) -> Vec<BigUint> {
+    let sp1_groth16_vk = get_sp1_vk();
+    let vkey_bytes: Vec<u8> = hex::decode(&vk.bytes32()[2..]).unwrap();
+
+    let groth16_proof =
+        Groth16Proof::from_sp1(vkey_bytes, proof.public_values.to_vec(), proof.bytes());
+
+    get_groth16_calldata(&groth16_proof, &sp1_groth16_vk, CurveID::BN254).unwrap()
+}
+
+/// Converts a Vec<BigUint> to a hexadecimal string format suitable for saving to a text file.
+/// Each BigUint is converted to hexadecimal and placed on its own line.
+///
+/// # Arguments
+/// * `calldata` - A vector of BigUint values to convert
+///
+/// # Returns
+/// A string where each line contains a hexadecimal representation of a BigUint value
+///
+/// # Example
+/// ```
+/// let calldata = vec![BigUint::from(255u32), BigUint::from(4095u32)];
+/// let hex_string = biguint_vec_to_hex_string(&calldata);
+/// // Result: "0xff\n0xfff\n"
+/// ```
+pub fn biguint_vec_to_hex_string(calldata: Vec<BigUint>) -> String {
+    calldata
+        .iter()
+        .map(|big_uint| format!("0x{:x}", big_uint))
+        .collect::<Vec<String>>()
+        .join("\n")
+        .to_string()
+        + "\n" // Add final newline for proper file formatting
+}
+
 /// Create a fixture for the given proof.
 fn create_proof_fixture(
     proof: &SP1ProofWithPublicValues,
@@ -102,12 +145,30 @@ fn create_proof_fixture(
     // the give public values.
     println!("Proof Bytes: {}", fixture.proof);
 
+    // Generate Starknet calldata and save it to a text file
+    let calldata = get_sp1_garaga_starknet_calldata(proof, vk);
+    let calldata_len = calldata.len();
+    let calldata_hex_string = biguint_vec_to_hex_string(calldata);
+
+    println!("Generated {} calldata elements", calldata_len);
+
     // Save the fixture to a file.
     let fixture_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../contracts/src/fixtures");
     std::fs::create_dir_all(&fixture_path).expect("failed to create fixture path");
+
+    // Save JSON fixture
     std::fs::write(
         fixture_path.join(format!("{:?}-fixture.json", system).to_lowercase()),
         serde_json::to_string_pretty(&fixture).unwrap(),
     )
     .expect("failed to write fixture");
+
+    // Save calldata as hexadecimal text file
+    std::fs::write(
+        fixture_path.join(format!("{:?}-calldata.txt", system).to_lowercase()),
+        calldata_hex_string,
+    )
+    .expect("failed to write calldata file");
+
+    println!("Fixtures saved to: {}", fixture_path.display());
 }

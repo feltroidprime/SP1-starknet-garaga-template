@@ -1798,6 +1798,7 @@ dependencies = [
  "fibonacci-lib",
  "garaga_rs",
  "hex",
+ "num-bigint 0.4.6",
  "serde",
  "serde_json",
  "sp1-build",
@@ -1941,8 +1942,8 @@ checksum = "42012b0f064e01aa58b545fe3727f90f7dd4020f4a3ea735b50344965f5a57e9"
 
 [[package]]
 name = "garaga_rs"
-version = "0.18.0"
-source = "git+https://github.com/keep-starknet-strange/garaga.git?rev=be864fd#be864fd1135ebd3b14af810ea996cec15abcb40e"
+version = "0.18.1"
+source = "git+https://github.com/keep-starknet-strange/garaga.git?rev=f81b360#f81b360ece820e5d84ed527b499a7d930ac2fde3"
 dependencies = [
  "arbitrary",
  "getrandom 0.3.2",
