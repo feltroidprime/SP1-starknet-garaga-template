@@ -85,6 +85,14 @@ pub fn get_sp1_garaga_starknet_calldata(
     let groth16_proof =
         Groth16Proof::from_sp1(vkey_bytes, proof.public_values.to_vec(), proof.bytes());
 
+    /*
+     Note:
+     You can use
+         garaga::calldata::full_proof_with_hints::groth16::get_groth16_calldata_felt
+     instead to output the result in Vec<Felt> type,
+     for better backend integration with tools like
+         https://github.com/xJonathanLEI/starkli
+    */
     get_groth16_calldata(&groth16_proof, &sp1_groth16_vk, CurveID::BN254).unwrap()
 }
 

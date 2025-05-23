@@ -37,3 +37,33 @@ Then set the `SP1_PROGRAM` in `src/lib.cairo` to the output of that command, for
 ```rust
 const SP1_PROGRAM: u256 = 0x00ee2a4a1c9c659ed802a544aa469136e72e1a1538af94fce56705576b48f247;
 ```
+
+#### Step 3: Generate a proof
+
+Run `cargo run --release --bin starknet -- --system groth16` to generate a proof.
+
+This script generate a proof and a fixture that can be used to test the verification of SP1 proofs inside Cairo.
+
+#### Step 4: Verify the proof
+
+The script generate a proof using SP1 and then converts the proof to calldata for the SP1 Starknet Verifier contract.
+
+A file is written in [`contracts/src/fixtures/groth16-calldata.txt`](src/fixtures/groth16-calldata.txt). 
+
+Using starknet foundry, the test reads this file and calls the `verify_proof` function of the contract. The contract assert : 
+
+- the proof is valid
+- the verification key for the given Rust program matches the one in the contract
+
+See [`contracts/src/lib.cairo`](src/lib.cairo) and [`contracts/tests/test_contract.cairo`](tests/test_contract.cairo) for the implementation.
+
+
+
+
+
+
+
+
+### Integration within your application
+
+We recommend reading the [script/src/bin/starknet.rs](../script/src/bin/starknet.rs) file to understand how the calldata is generated. 
