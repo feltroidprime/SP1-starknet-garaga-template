@@ -3,16 +3,10 @@
 //!
 //! You can run this script using the following command:
 //! ```shell
-//! RUST_LOG=info cargo run --release --bin evm -- --system groth16
-//! ```
-//! or
-//! ```shell
-//! RUST_LOG=info cargo run --release --bin evm -- --system plonk
+//! RUST_LOG=info cargo run --release --bin starknet -- --system groth16
 //! ```
 
-use alloy_sol_types::SolType;
 use clap::{Parser, ValueEnum};
-use fibonacci_lib::PublicValuesStruct;
 use serde::{Deserialize, Serialize};
 use sp1_sdk::{
     include_elf, HashableKey, ProverClient, SP1ProofWithPublicValues, SP1Stdin, SP1VerifyingKey,
@@ -22,10 +16,10 @@ use std::path::PathBuf;
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
 
-/// The arguments for the EVM command.
+/// The arguments for the Starknet command.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-struct EVMArgs {
+struct StarknetArgs {
     #[arg(long, default_value = "20")]
     n: u32,
     #[arg(long, value_enum, default_value = "groth16")]
@@ -40,11 +34,8 @@ enum ProofSystem {
 
 /// A fixture that can be used to test the verification of SP1 zkVM proofs inside Solidity.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 struct SP1FibonacciProofFixture {
-    a: u32,
-    b: u32,
-    n: u32,
     vkey: String,
     public_values: String,
     proof: String,
@@ -55,7 +46,7 @@ fn main() {
     sp1_sdk::utils::setup_logger();
 
     // Parse the command line arguments.
-    let args = EVMArgs::parse();
+    let args = StarknetArgs::parse();
 
     // Setup the prover client.
     let client = ProverClient::from_env();
@@ -87,13 +78,9 @@ fn create_proof_fixture(
 ) {
     // Deserialize the public values.
     let bytes = proof.public_values.as_slice();
-    let PublicValuesStruct { n, a, b } = PublicValuesStruct::abi_decode(bytes).unwrap();
 
     // Create the testing fixture so we can test things end-to-end.
     let fixture = SP1FibonacciProofFixture {
-        a,
-        b,
-        n,
         vkey: vk.bytes32().to_string(),
         public_values: format!("0x{}", hex::encode(bytes)),
         proof: format!("0x{}", hex::encode(proof.bytes())),
