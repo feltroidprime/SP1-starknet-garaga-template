@@ -18,6 +18,7 @@ path = "src/bin/vkey.rs"
 
 [dependencies]
 sp1-sdk = "4.2.0"
+garaga_rs = { git = "https://github.com/keep-starknet-strange/garaga.git", rev = "be864fd" }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde = { version = "1.0.200", default-features = false, features = ["derive"] }
 clap = { version = "4.0", features = ["derive", "env"] }
@@ -26,6 +27,7 @@ hex = "0.4.3"
 alloy-sol-types = { workspace = true }
 fibonacci-lib = { path = "../lib" }
 dotenv = "0.15.0"
+
 
 [build-dependencies]
 sp1-build = "4.2.0"

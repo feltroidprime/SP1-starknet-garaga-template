@@ -15,7 +15,6 @@ mod HelloStarknet {
     struct Storage {
         last_fibonacci_n: u256,
     }
-
     const SP1_VERIFIER_CLASS_HASH: felt252 =
         0x5d147e9fcb648e847da819287b8f462ce9416419240c64d35640dcba35e127;
 

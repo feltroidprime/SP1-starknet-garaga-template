@@ -48,7 +48,7 @@ To generate a Groth16 proof:
 
 ```sh
 cd script
-cargo run --release --bin evm -- --system groth16
+cargo run --release --bin starknet -- --system groth16
 ```
 
 These commands will also generate fixtures that can be used to test the verification of SP1 proofs
@@ -79,5 +79,5 @@ For example, to generate an EVM-compatible proof using the prover network, run t
 command:
 
 ```sh
-SP1_PROVER=network NETWORK_PRIVATE_KEY=... cargo run --release --bin evm
+SP1_PROVER=network NETWORK_PRIVATE_KEY=... cargo run --release --bin starknet
 ```
