@@ -7,11 +7,12 @@ that can generate a proof of any RISC-V program.
 
 - [Rust](https://rustup.rs/)
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
+- [Starknet Toolchain](https://github.com/software-mansion/starkup)
 
 ## Running the Project
 
 There are 3 main ways to run this project: execute a program, generate a core proof, and
-generate an EVM-compatible proof.
+generate an Starknet-compatible proof.
 
 ### Build the Program
 
@@ -37,12 +38,12 @@ cd script
 cargo run --release -- --prove
 ```
 
-### Generate an EVM-Compatible Proof
+### Generate an Starknet-Compatible Proof
 
 > [!WARNING]
 > You will need at least 16GB RAM to generate a Groth16 or PLONK proof. View the [SP1 docs](https://docs.succinct.xyz/docs/sp1/getting-started/hardware-requirements#local-proving) for more information.
 
-Generating a proof that is cheap to verify on the EVM (e.g. Groth16 or PLONK) is more intensive than generating a core proof.
+Generating a proof that is cheap to verify on Starknet (e.g. Groth16) is more intensive than generating a core proof.
 
 To generate a Groth16 proof:
 
@@ -52,7 +53,7 @@ cargo run --release --bin starknet -- --system groth16
 ```
 
 These commands will also generate fixtures that can be used to test the verification of SP1 proofs
-inside Solidity.
+inside Cairo..
 
 ### Retrieve the Verification Key
 
@@ -75,7 +76,7 @@ cp .env.example .env
 Then, set the `SP1_PROVER` environment variable to `network` and set the `NETWORK_PRIVATE_KEY`
 environment variable to your whitelisted private key.
 
-For example, to generate an EVM-compatible proof using the prover network, run the following
+For example, to generate an Starknet-compatible proof using the prover network, run the following
 command:
 
 ```sh
