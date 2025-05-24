@@ -17,3 +17,9 @@ pgo-data.profdata
 
 # Env
 .env
+
+target
+.snfoundry_cache/
+snfoundry_trace/
+coverage/
+profile/
