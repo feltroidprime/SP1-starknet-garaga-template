@@ -88,7 +88,7 @@ This creates:
 
 ### 4. Test On-Chain Verification
 
-Run the Cairo tests to verify the proof on Starknet:
+Run the Starknet foundry tests to test Starknet proof verification:
 
 ```bash
 cd contracts
