@@ -135,10 +135,9 @@ SP1_PROVER=network NETWORK_PRIVATE_KEY=your_key cargo run --release --bin starkn
    SP1_PROVER=network cargo run --release --bin starknet
    ```
 
-3. **Monitor cycle counts for optimization:**
-   - < 1K cycles: Excellent
-   - < 10K cycles: Good
-   - \> 10K cycles: Consider optimization
+3. **Optimize cycle counts:**  
+   ✨ Leverage [SP1 precompiles](https://docs.succinct.xyz/docs/sp1/optimizing-programs/precompiles) for maximum performance.
+ 
 
 ## 🧪 Testing and Validation
 
@@ -214,17 +213,6 @@ cargo check
 └── groth16-calldata.txt    # Starknet contract calldata
 ```
 
-### Build Artifacts
-
-```
-target/
-├── release/
-│   ├── main              # Execution and proving binary
-│   ├── starknet          # Starknet proof generation
-│   └── vkey              # Verification key extraction
-└── debug/                # Debug builds
-```
-
 ## 🔗 Integration
 
 ### With Starknet Contracts
@@ -254,7 +242,7 @@ let calldata = get_sp1_garaga_starknet_calldata(&proof, &vk);
 let hex_calldata = biguint_vec_to_hex_string(calldata);
 
 // Use in your application
-send_to_starknet_contract(hex_calldata);
+send_to_starknet_contract(calldata);
 ```
 
 ## 📚 Dependencies
