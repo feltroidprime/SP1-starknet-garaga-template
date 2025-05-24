@@ -1,5 +1,9 @@
 # SP1 Starknet Verification Contracts
 
+> **📖 For project overview and quick start, see the [main README](../README.md)**
+> 
+> **⚙️ For proof generation, see the [script documentation](../script/README.md)**
+
 This directory contains Cairo smart contracts for verifying [SP1](https://github.com/succinctlabs/sp1) zero-knowledge proofs on Starknet using the Garaga SP1 Verifier.
 
 ## 🏗️ Architecture
@@ -17,32 +21,19 @@ The verification system consists of:
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Setup
 
-### Prerequisites
-
-- [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/getting-started/installation.html)
-- [Scarb](https://docs.swmansion.com/scarb/download.html)
-
-### Installation
-
-```bash
-# Install Scarb (Cairo package manager)
-curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
-
-# Install Starknet Foundry (testing framework)
-curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | sh
-```
-
-### Build and Test
+> **Prerequisites**: See [main README prerequisites](../README.md#prerequisites)
 
 ```bash
 # Build the contracts
 scarb build
 
-# Run all tests
+# Run tests (requires proof fixtures)
 snforge test
 ```
+
+For complete setup including proof generation, see the [main README workflow](../README.md#quick-test-workflow).
 
 ## 📁 Project Structure
 
@@ -72,7 +63,7 @@ const SP1_VERIFIER_CLASS_HASH: felt252 = 0x5d147e9fcb648e847da819287b8f462ce9416
 
 ### Step 2: Set Your Program Verification Key
 
-1. **Generate your verification key**:
+1. **Generate your verification key** (see [script documentation](../script/README.md#3-verification-key-script-vkeyrs)):
    ```bash
    cd ../script
    cargo run --release --bin vkey
@@ -87,7 +78,7 @@ const SP1_VERIFIER_CLASS_HASH: felt252 = 0x5d147e9fcb648e847da819287b8f462ce9416
 
 ### Step 3: Generate Proof Fixtures
 
-Generate proof data for testing:
+> **For detailed proof generation instructions, see [script/README.md](../script/README.md#2-starknet-script-starknetrs)**
 
 ```bash
 cd ../script
@@ -99,8 +90,6 @@ This creates test fixtures in `src/fixtures/`:
 - `groth16-calldata.txt`: Formatted calldata for contract calls
 
 ### Step 4: Verify Everything Works
-
-Run the verification test:
 
 ```bash
 snforge test
@@ -193,6 +182,16 @@ snforge test
 snforge test --detailed-resources
 ```
 
+### Test Requirements
+
+Tests require valid proof fixtures. Generate them using:
+
+```bash
+cd ../script
+cargo run --release --bin starknet -- --system groth16 --n 10
+cd ../contracts
+snforge test
+```
 
 ## 🔗 Integration Guide
 
@@ -222,6 +221,8 @@ snforge test --detailed-resources
 
 ### Calldata Generation
 
+> **For proof generation details, see [script/README.md](../script/README.md#integration)**
+
 Use the script utilities to generate properly formatted calldata:
 
 ```rust
@@ -232,14 +233,50 @@ let calldata = get_sp1_garaga_starknet_calldata(&proof, &vk);
 let calldata_hex = biguint_vec_to_hex_string(calldata);
 ```
 
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **"Wrong program" error**
+   - Regenerate verification key: `cd ../script && cargo run --release --bin vkey`
+   - Update contract with new key in [Step 2](#step-2-set-your-program-verification-key)
+   - Regenerate proofs: `cargo run --release --bin starknet`
+
+2. **Test failures**
+   - Ensure proof fixtures exist: check `src/fixtures/` directory
+   - Regenerate fixtures: `cd ../script && cargo run --release --bin starknet`
+   - Verify contract configuration matches generated proofs
+
+3. **Fork test issues**
+   - Check network connectivity to Sepolia
+   - Verify Garaga verifier is deployed on current Sepolia
+   - Update `SP1_VERIFIER_CLASS_HASH` if needed
+
+### Debug Commands
+
+```bash
+# Check if fixtures exist
+ls -la src/fixtures/
+
+# Verbose test output
+snforge test --verbose
+
+# Check contract compilation
+scarb build
+```
+
 ## 📚 Resources
 
-- [SP1 Documentation](https://docs.succinct.xyz/)
-- [Garaga Library](https://garaga.gitbook.io/garaga/)
+- [Garaga Documentation](https://garaga.gitbook.io/garaga/)
+- [Garaga SP1 Verifier Contracts](https://garaga.gitbook.io/garaga/maintained-smart-contracts)
 - [Starknet Foundry](https://foundry-rs.github.io/starknet-foundry/)
 - [Cairo Book](https://book.cairo-lang.org/)
 - [Starknet Documentation](https://docs.starknet.io/)
 
+## 📄 License
 
+This project is licensed under the MIT License - see the [LICENSE-MIT](../LICENSE-MIT) file for details.
 
-**Need help?** Check the [main project README](../README.md) or create an issue.
+---
+
+**Need help?** Check the [main project README](../README.md) or [troubleshooting section](../README.md#troubleshooting).

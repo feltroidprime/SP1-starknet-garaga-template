@@ -1,5 +1,7 @@
 # SP1 Proof Generation Scripts
 
+> **📖 For project overview and quick start, see the [main README](../README.md)**
+
 This directory contains the proof generation and utility scripts for the SP1 Starknet template. These scripts handle SP1 program execution, proof generation, and Starknet integration.
 
 ## 🏗️ Architecture
@@ -50,7 +52,7 @@ Specialized script for generating Starknet-compatible proofs using Garaga integr
 # Generate Groth16 proof for Starknet
 cargo run --release --bin starknet -- --system groth16 --n 10
 
-# Using Prover Network
+# Using Prover Network (see main README for setup)
 SP1_PROVER=network NETWORK_PRIVATE_KEY=your_key cargo run --release --bin starknet
 ```
 
@@ -77,53 +79,20 @@ cargo run --release --bin vkey
 0x00ee2a4a1c9c659ed802a544aa469136e72e1a1538af94fce56705576b48f247
 ```
 
-## 🚀 Quick Start
+## 🚀 Quick Setup
 
-### Prerequisites
+> **Prerequisites**: See [main README prerequisites](../README.md#prerequisites)
 
-- [Rust](https://rustup.rs/) (latest stable)
-- [SP1 Toolchain](https://docs.succinct.xyz/docs/sp1/getting-started/install)
+```bash
+# Build the scripts
+cargo build --release
 
-### Installation
-
-1. **Install SP1:**
-   ```bash
-   curl -L https://sp1.succinct.xyz | bash
-   sp1up
-   ```
-
-2. **Build the scripts:**
-   ```bash
-   cargo build --release
-   ```
-
-### Basic Workflow
-
-1. **Test your program:**
-   ```bash
-   cargo run --release -- --execute --n 5
-   ```
-
-2. **Extract verification key:**
-   ```bash
-   cargo run --release --bin vkey
-   ```
-
-3. **Update contract with verification key:**
-   ```bash
-   # Copy the output and update contracts/src/lib.cairo
-   const SP1_PROGRAM: u256 = 0x[YOUR_KEY_HERE];
-   ```
-
-4. **Generate Starknet proof:**
-   ```bash
-   cargo run --release --bin starknet -- --system groth16 --n 5
-   ```
-
-5. **Test on-chain verification:**
-   ```bash
-   cd ../contracts && snforge test
-   ```
+# Basic workflow (see main README for complete setup)
+cargo run --release -- --execute --n 5        # Test execution
+cargo run --release --bin vkey                 # Get verification key
+# Update contract (see contracts/README.md)
+cargo run --release --bin starknet -- --n 5   # Generate proof
+```
 
 ## 🔧 Configuration
 
@@ -135,18 +104,12 @@ cargo run --release --bin vkey
 
 ### Prover Network Setup
 
-For production use or complex computations:
+> **For setup instructions, see [main README](../README.md#using-the-prover-network)**
 
-1. **Set up environment:**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your network private key
-   ```
-
-2. **Use network prover:**
-   ```bash
-   SP1_PROVER=network NETWORK_PRIVATE_KEY=your_key cargo run --release --bin starknet
-   ```
+```bash
+# Use network prover
+SP1_PROVER=network NETWORK_PRIVATE_KEY=your_key cargo run --release --bin starknet
+```
 
 ## 📊 Performance Considerations
 
@@ -157,6 +120,8 @@ For production use or complex computations:
 | Execution | 1GB | Seconds | Fast testing |
 | Core Proof | 4GB | Minutes | Development proofs |
 | Groth16 Proof | 16GB | 10-30 min | Production proofs |
+
+> **💡 Tip**: For large computations, use the [Prover Network](../README.md#using-the-prover-network)
 
 ### Optimization Tips
 
@@ -203,7 +168,7 @@ cd ../contracts && snforge test
 # Extract key
 cargo run --release --bin vkey
 
-# Verify it matches contract
+# Verify it matches contract (see contracts/README.md for configuration)
 grep "SP1_PROGRAM" ../contracts/src/lib.cairo
 ```
 
@@ -213,12 +178,12 @@ grep "SP1_PROGRAM" ../contracts/src/lib.cairo
 
 1. **"failed to generate proof"**
    - Check available RAM (16GB+ for Groth16)
-   - Try using the Prover Network
-   - Verify SP1 installation
+   - Try using the [Prover Network](../README.md#using-the-prover-network)
+   - Verify SP1 installation: `sp1 --version`
 
 2. **"Wrong program" error in contract**
    - Regenerate verification key: `cargo run --release --bin vkey`
-   - Update contract with new key
+   - Update contract with new key (see [contracts/README.md](../contracts/README.md#step-2-set-your-program-verification-key))
    - Regenerate proofs
 
 3. **Calldata format issues**
@@ -239,9 +204,9 @@ sp1 --version
 cargo check
 ```
 
-## 📁 File Structure
+## 📁 Generated Files
 
-### Generated Files
+### Proof Fixtures
 
 ```
 ../contracts/src/fixtures/
@@ -264,16 +229,19 @@ target/
 
 ### With Starknet Contracts
 
-1. **Update verification key:**
-   ```rust
-   const SP1_PROGRAM: u256 = 0x[VERIFICATION_KEY];
+> **For complete contract setup, see [contracts/README.md](../contracts/README.md)**
+
+1. **Extract verification key:**
+   ```bash
+   cargo run --release --bin vkey
    ```
 
-2. **Use generated calldata:**
-   ```cairo
-   let file = FileTrait::new("src/fixtures/groth16-calldata.txt");
-   let calldata = read_txt(@file);
-   let result = dispatcher.verify_sp1_proof(calldata);
+2. **Update contract:** (see [contracts/README.md](../contracts/README.md#step-2-set-your-program-verification-key))
+
+3. **Generate proof and test:**
+   ```bash
+   cargo run --release --bin starknet -- --n 10
+   cd ../contracts && snforge test
    ```
 
 ### With External Applications
@@ -303,11 +271,10 @@ send_to_starknet_contract(hex_calldata);
 - `sp1-build`: SP1 program compilation
 - `fibonacci-lib`: Shared computation logic
 
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE-MIT](../LICENSE-MIT) file for details.
 
 ---
 
-**Need help?** Check the [main project README](../README.md) or create an issue. 
+**Need help?** Check the [main project README](../README.md) or [troubleshooting section](../README.md#troubleshooting). 
